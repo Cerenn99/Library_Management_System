@@ -1,0 +1,72 @@
+class Library:
+    def __init__(self):
+        self.file = open("books.txt", "a+")
+
+    def __del__(self):
+        self.file.close()
+
+    def list_books(self):
+        try:
+            self.file.seek(0)  
+            book_lines = self.file.read().splitlines()
+
+            if not book_lines:
+                print("No books found.")
+            else:
+                for line in book_lines:
+                    book_info = line.split(',')
+                    if len(book_info) >= 4:
+                        book_title = book_info[0].strip()
+                        book_author = book_info[1].strip()
+                        
+                        print(f"Title: {book_title}, Author: {book_author}")
+                    else:
+                        print("Invalid book entry:", line)
+
+        except Exception as e:
+            print("Error:", e)
+
+    def add_book(self):
+        title = input("Enter book title: ")
+        author = input("Enter book author: ")
+        release_year = input("Enter release year: ")
+        num_pages = input("Enter number of pages: ")
+        book_info = f"{title},{author},{release_year},{num_pages}\n"
+        self.file.write(book_info)
+        print("Book added successfully.")
+
+    def remove_book(self):
+        title = input("Enter the title of the book to remove: ")
+        self.file.seek(0)  
+        book_lines = self.file.readlines()
+        updated_books = []
+        for line in book_lines:
+            book_info = line.strip().split(',')
+            if book_info[0] != title:
+                updated_books.append(line)
+        self.file.seek(0)  
+        self.file.truncate()  
+        for updated_book in updated_books:
+            self.file.write(updated_book)
+        print("Book removed successfully.")
+
+
+lib = Library()
+
+
+while True:
+    print("\n*** MENU ***")
+    print("1) List Books")
+    print("2) Add Book")
+    print("3) Remove Book")
+    choice = input("Enter your choice (1-3, or 'q' to quit): ")
+    if choice == '1':
+        lib.list_books()
+    elif choice == '2':
+        lib.add_book()
+    elif choice == '3':
+        lib.remove_book()
+    elif choice.lower() == 'q':
+        break
+    else:
+        print("Invalid choice. Please try again.")
